@@ -9,6 +9,37 @@ permissions:
   contents: read
 
 jobs:
+  npm:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        # Maintenance and active LTS
+        node-version: [18, 20]
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install with npm
+        run: pnpm install
+      
+      - name: Compile with npm
+        run: npm run build:code
+
+      - name: Run tests with npm
+        run: |
+          npm run test
+        env:
+          NODE_OPTIONS: no-network-family-autoselection
+          
   pnpm:
     runs-on: ${{ matrix.os }}
 
